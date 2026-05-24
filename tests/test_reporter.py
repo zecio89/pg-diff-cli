@@ -91,3 +91,10 @@ def test_color_codes_present_when_enabled():
     opts = ReportOptions(color=True)
     report = format_report(diff, opts)
     assert "\033[" in report
+
+
+def test_removed_column_shown_with_minus():
+    col = _col("legacy_field", removed=True)
+    diff = SchemaDiff(table_diffs=[_table("users", cols=[col])])
+    report = format_report(diff, OPTS_NO_COLOR)
+    assert "- column legacy_field" in report
