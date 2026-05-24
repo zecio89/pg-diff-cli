@@ -25,6 +25,14 @@ def build_lint_parser(parent: argparse._SubParsersAction) -> argparse.ArgumentPa
     return p
 
 
+def _count_by_level(result: LintResult) -> dict[str, int]:
+    """Return a mapping of level -> count for all warnings in *result*."""
+    counts: dict[str, int] = {"error": 0, "warning": 0}
+    for w in result.warnings:
+        counts[w.level] += 1
+    return counts
+
+
 def _print_result(result: LintResult, *, use_color: bool = True) -> None:
     if not result.has_warnings:
         print("✔  No lint issues found.")
@@ -38,9 +46,7 @@ def _print_result(result: LintResult, *, use_color: bool = True) -> None:
         else:
             print(str(w))
 
-    counts = {"error": 0, "warning": 0}
-    for w in result.warnings:
-        counts[w.level] += 1
+    counts = _count_by_level(result)
 
     parts = []
     if counts["error"]:
