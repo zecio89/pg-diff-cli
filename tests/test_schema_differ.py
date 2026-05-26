@@ -49,6 +49,18 @@ def test_diff_added_column():
     assert td.column_diffs[0].column == "email"
 
 
+def test_diff_removed_column():
+    source = DatabaseSchema(tables=[_table("users", [_col("id", "integer"), _col("email", "text")])])
+    target = DatabaseSchema(tables=[_table("users", [_col("id", "integer")])])
+    result = diff_schemas(source, target)
+    assert len(result.table_diffs) == 1
+    td = result.table_diffs[0]
+    assert td.kind == "modified"
+    assert len(td.column_diffs) == 1
+    assert td.column_diffs[0].kind == "removed"
+    assert td.column_diffs[0].column == "email"
+
+
 def test_diff_modified_column_type():
     source = DatabaseSchema(tables=[_table("users", [_col("age", "integer")])])
     target = DatabaseSchema(tables=[_table("users", [_col("age", "bigint")])])
